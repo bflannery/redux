@@ -1,6 +1,10 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
 import expect from 'expect';
 import { createStore } from 'redux';
 
+
+//REDUCER
 const counter = (state = 0, action) => {
    switch (action.type) {
      case 'INCREMENT':
@@ -12,20 +16,45 @@ const counter = (state = 0, action) => {
    }
 }
 
+//REACT COUNTER COMPONENT
+const Counter = ({ value, onIncrement, onDecrement }) => (
+  <div>
+    <h1> {value} </h1>
+    <button onClick={onIncrement}>+</button>
+    <button onClick={onDecrement}>-</button>
+  </div>
+);
 
+
+//REDUX STORE
 const store = createStore(counter);
 
 
+///REACT RENDER FUNCTION
+//PASS COUNTER COMPONENT WITH STATE
 const render = () => {
-  document.body.innerText = store.getState();
+  ReactDOM.render(
+    <Counter
+      value={store.getState()}
+      onIncrement={() =>
+        store.dispatch({
+          type: 'INCREMENT'
+        })
+      }
+      onDecrement={() =>
+        store.dispatch({
+          type: 'DECREMENT'
+        })
+      }
+    />,
+    document.getElementById('root')
+  );
 };
 
+//SUBSCRIBE TO CHANGES ON THE RENDER FUNCTION
 store.subscribe(render);
 render();
 
-document.addEventListener('click', () => {
-  store.dispatch({ type: 'INCREMENT'});
-});
 //
 // expect(
 //   counter(0, { type: 'INCREMENT'})
