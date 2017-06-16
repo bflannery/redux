@@ -1,83 +1,73 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
 import expect from 'expect';
-import { createStore } from 'redux';
+import deepFreeze from 'deep-freeze';
 
 
-//REDUCER
-const counter = (state = 0, action) => {
-   switch (action.type) {
-     case 'INCREMENT':
-        return state + 1;
-     case 'DECREMENT':
-        return state - 1;
-     default:
-        return state;
-   }
-}
 
-//REACT COUNTER COMPONENT
-const Counter = ({ value, onIncrement, onDecrement }) => (
-  <div>
-    <h1> {value} </h1>
-    <button onClick={onIncrement}>+</button>
-    <button onClick={onDecrement}>-</button>
-  </div>
-);
-
-
-//REDUX STORE
-const store = createStore(counter);
-
-
-///REACT RENDER FUNCTION
-//PASS COUNTER COMPONENT WITH STATE
-const render = () => {
-  ReactDOM.render(
-    <Counter
-      value={store.getState()}
-      onIncrement={() =>
-        store.dispatch({
-          type: 'INCREMENT'
-        })
-      }
-      onDecrement={() =>
-        store.dispatch({
-          type: 'DECREMENT'
-        })
-      }
-    />,
-    document.getElementById('root')
-  );
+//ADD COUNTER FUNCTION
+const addCounter = (list) => {
+  return [...list, 0];
 };
 
-//SUBSCRIBE TO CHANGES ON THE RENDER FUNCTION
-store.subscribe(render);
-render();
 
-//
-// expect(
-//   counter(0, { type: 'INCREMENT'})
-// ).toEqual(1);
-//
-// expect(
-//   counter(1, { type: 'INCREMENT'})
-// ).toEqual(2);
-//
-// expect(
-//   counter(2, { type: 'DECREMENT'})
-// ).toEqual(1);
-//
-// expect(
-//   counter(1, { type: 'DECREMENT'})
-// ).toEqual(0);
-//
-// expect(
-//   counter(1, { type: 'SOMETHING_ELSE' })
-// ).toEqual(1);
-//
-// expect(
-//   counter(undefined, {})
-// ).toEqual(0);
-//
-// console.log('Tests passed!');
+//REMOVE COUNTER FUNCTION
+const removeCounter = (list, index) => {
+  return [
+    ...list.slice(0, index),
+    ...list.slice(index + 1)
+  ];
+};
+
+
+const incrementCounter = (list, index) => {
+  return [
+    ...list.slice(0, index),
+    list[index] + 1,
+    ...list.slice(index + 1)
+  ];
+};
+
+
+
+//TESTS
+
+//TEST ADD COUNTER FUNCTION
+const testAddCounter = () => {
+  const listBefore = [];
+  const listAfter = [0];
+
+  deepFreeze(listBefore);
+
+  expect(
+    addCounter(listBefore)
+  ).toEqual(listAfter);
+};
+
+//TEST REMOVE COUNTER FUNCTION
+const testRemoveCounter = () => {
+  const listBefore = [0, 10, 20];
+  const listAfter = [0, 20];
+
+  deepFreeze(listBefore);
+
+  expect(
+    removeCounter(listBefore, 1)
+  ).toEqual(listAfter);
+};
+
+const testIncrementCounter = () => {
+  const listBefore = [0, 10, 20];
+  const listAfter = [0, 11, 20];
+
+  deepFreeze(listBefore);
+
+  expect(
+    incrementCounter(listBefore, 1)
+  ).toEqual(listAfter);
+};
+
+
+
+//CALL TEST FUNCTIONS
+testAddCounter();
+testRemoveCounter();
+console.log('All tests passed');
