@@ -1,73 +1,98 @@
 import expect from 'expect';
 import deepFreeze from 'deep-freeze';
 
-
-
-//ADD COUNTER FUNCTION
-const addCounter = (list) => {
-  return [...list, 0];
+//Todo REDUCER FUNCTION
+const todos = (state = [], action) => {
+  switch(action.type) {
+    case 'ADD_TODO':
+      return [
+        ...state,
+        {
+          id: action.id,
+          text: action.text,
+          completed: false
+        }
+      ];
+    case 'TOGGLE_TODO':
+      return state.map(todo => {
+        if(todo.id !== action.id) {
+          return todo;
+        }
+        
+        return {
+          ...todo,
+          completed: !todo.completed
+        };
+      });
+    default:
+      return state;
+  }
 };
 
-
-//REMOVE COUNTER FUNCTION
-const removeCounter = (list, index) => {
-  return [
-    ...list.slice(0, index),
-    ...list.slice(index + 1)
+//Todo REDUCER FUNCTION TEST
+const testAddTodo = () => {
+  const stateBefore = [];
+  const action = {
+    type: 'ADD_TODO',
+    id: 0,
+    text: 'Learn Redux'
+  };
+  const stateAfter = [
+    {
+      id: 0,
+      text:'Learn Redux',
+      completed: false
+    }
   ];
+
+  deepFreeze(stateBefore);
+  deepFreeze(action);
+
+  expect(
+    todos(stateBefore, action)
+  ).toEqual(stateAfter);
 };
 
-
-const incrementCounter = (list, index) => {
-  return [
-    ...list.slice(0, index),
-    list[index] + 1,
-    ...list.slice(index + 1)
+const testToggleTodo = () => {
+  const stateBefore = [
+    {
+      id: 0,
+      text: 'Learn Redux',
+      completed: false
+    },
+    {
+      id: 1,
+      text: 'Go Shopping',
+      completed: false
+    }
   ];
-};
+  const action = {
+    type: 'TOGGLE_TODO',
+    id: 1
+  };
+  const stateAfter = [
+    {
+      id: 0,
+      text: 'Learn Redux',
+      completed: false
+    },
+    {
+      id: 1,
+      text: 'Go Shopping',
+      completed: true
+    }
+  ];
 
-
-
-//TESTS
-
-//TEST ADD COUNTER FUNCTION
-const testAddCounter = () => {
-  const listBefore = [];
-  const listAfter = [0];
-
-  deepFreeze(listBefore);
-
-  expect(
-    addCounter(listBefore)
-  ).toEqual(listAfter);
-};
-
-//TEST REMOVE COUNTER FUNCTION
-const testRemoveCounter = () => {
-  const listBefore = [0, 10, 20];
-  const listAfter = [0, 20];
-
-  deepFreeze(listBefore);
+  deepFreeze(stateBefore);
+  deepFreeze(action);
 
   expect(
-    removeCounter(listBefore, 1)
-  ).toEqual(listAfter);
-};
-
-const testIncrementCounter = () => {
-  const listBefore = [0, 10, 20];
-  const listAfter = [0, 11, 20];
-
-  deepFreeze(listBefore);
-
-  expect(
-    incrementCounter(listBefore, 1)
-  ).toEqual(listAfter);
+    todos(stateBefore, action)
+  ).toEqual(stateAfter);
 };
 
 
-
-//CALL TEST FUNCTIONS
-testAddCounter();
-testRemoveCounter();
-console.log('All tests passed');
+//CALL FUNCTIONS
+testAddTodo();
+testToggleTodo();
+console.log('All Tests Passed');
